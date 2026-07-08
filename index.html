@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Tap and Hold</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .btn-wrap {
+    position: relative;
+    width: 200px; height: 200px;
+    touch-action: none;
+  }
+  svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  circle.bg-ring { fill: none; stroke: #EAEAEA; stroke-width: 8; }
+  circle.progress-ring {
+    fill: none;
+    stroke: #00AFF0;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 565.48; /* 2*PI*90 */
+    stroke-dashoffset: 565.48;
+  }
+  .photo-btn {
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 176px; height: 176px;
+    border-radius: 50%;
+    background-image: url('https://jying2830-cmd.github.io/mylink/IMG_1513.jpeg');
+    background-size: cover;
+    background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hold-text {
+    color: #FFFFFF;
+    font-family: -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+<div class="btn-wrap" id="btnWrap">
+  <svg width="200" height="200">
+    <circle class="bg-ring" cx="100" cy="100" r="90"></circle>
+    <circle class="progress-ring" id="progressRing" cx="100" cy="100" r="90"></circle>
+  </svg>
+  <div class="photo-btn" id="photoBtn">
+    <span class="hold-text">HOLD</span>
+  </div>
+</div>
+
+<script>
+  const DESTINATION_URL = "https://beacons.ai/jaamietan";
+
+  const HOLD_MS = 1200;
+  const CIRCUMFERENCE = 565.48;
+  const ring = document.getElementById('progressRing');
+  const btn = document.getElementById('photoBtn');
+  const wrap = document.getElementById('btnWrap');
+
+  let holdTimer = null;
+  let holding = false;
+
+  function startHold(e) {
+    e.preventDefault();
+    if (holding) return;
+    holding = true;
+
+    ring.style.transition = 'none';
+    void ring.offsetWidth; // force reflow
+    ring.style.transition = `stroke-dashoffset ${HOLD_MS}ms linear`;
+    ring.style.strokeDashoffset = '0';
+
+    holdTimer = setTimeout(completeHold, HOLD_MS);
+  }
+
+  function cancelHold() {
+    if (!holding) return;
+    holding = false;
+    clearTimeout(holdTimer);
+
+    ring.style.transition = 'stroke-dashoffset 0.15s ease-out';
+    ring.style.strokeDashoffset = String(CIRCUMFERENCE);
+  }
+
+  function completeHold() {
+    holding = false;
+    breakoutRedirect(DESTINATION_URL);
+  }
+
+  wrap.addEventListener('pointerdown', startHold);
+  wrap.addEventListener('pointerup', cancelHold);
+  wrap.addEventListener('pointerleave', cancelHold);
+  wrap.addEventListener('pointercancel', cancelHold);
+  wrap.addEventListener('contextmenu', e => e.preventDefault());
+
+  // ---- Lightweight in-app-browser breakout ----
+  function isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+    return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|TikTok|Snapchat/i.test(ua);
+  }
+
+  function breakoutRedirect(url) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isInAppBrowser() && isIOS) {
+      window.location = 'x-safari-' + url;
+      setTimeout(() => { window.location = url; }, 400);
+    } else {
+      window.location = url;
+    }
+  }
+</script>
+
+</body>
+</html>
