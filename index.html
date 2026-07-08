@@ -14,6 +14,20 @@
     -webkit-user-select: none;
     user-select: none;
   }
+  .page-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+  .above-text {
+    color: #1A1A1A;
+    font-family: -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
   .btn-wrap {
     position: relative;
     width: 200px; height: 200px;
@@ -37,29 +51,21 @@
     background-image: url('https://jying2830-cmd.github.io/mylink/IMG_1513.jpeg');
     background-size: cover;
     background-position: center;
-    display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-  }
-  .hold-text {
-    color: #FFFFFF;
-    font-family: -apple-system, sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    letter-spacing: 1px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.5);
   }
 </style>
 </head>
 <body>
 
-<div class="btn-wrap" id="btnWrap">
-  <svg width="200" height="200">
-    <circle class="bg-ring" cx="100" cy="100" r="90"></circle>
-    <circle class="progress-ring" id="progressRing" cx="100" cy="100" r="90"></circle>
-  </svg>
-  <div class="photo-btn" id="photoBtn">
-    <span class="hold-text">HOLD</span>
+<div class="page-wrap">
+  <div class="above-text">Press & Hold</div>
+  <div class="btn-wrap" id="btnWrap">
+    <svg width="200" height="200">
+      <circle class="bg-ring" cx="100" cy="100" r="90"></circle>
+      <circle class="progress-ring" id="progressRing" cx="100" cy="100" r="90"></circle>
+    </svg>
+    <div class="photo-btn" id="photoBtn"></div>
   </div>
 </div>
 
@@ -69,7 +75,6 @@
   const HOLD_MS = 1200;
   const CIRCUMFERENCE = 565.48;
   const ring = document.getElementById('progressRing');
-  const btn = document.getElementById('photoBtn');
   const wrap = document.getElementById('btnWrap');
 
   let holdTimer = null;
