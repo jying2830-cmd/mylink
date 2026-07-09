@@ -40,7 +40,7 @@
     stroke: #00AFF0;
     stroke-width: 8;
     stroke-linecap: round;
-    stroke-dasharray: 565.48; /* 2*PI*90 */
+    stroke-dasharray: 565.48;
     stroke-dashoffset: 565.48;
   }
   .photo-btn {
@@ -70,7 +70,20 @@
 </div>
 
 <script>
-  const DESTINATION_URL = "https://beacons.ai/jaamietan";
+  const DESTINATION_URL = atob("aHR0cHM6Ly9iZWFjb25zLmFpL2phYW1pZXRhbg==");
+
+  function isInAppBrowser() {
+    const ua = navigator.userAgent || '';
+    return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|TikTok|Snapchat/i.test(ua);
+  }
+
+  (function instantBreakout() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isInAppBrowser() && isIOS) {
+      const currentUrl = window.location.href;
+      window.location = 'x-safari-' + currentUrl;
+    }
+  })();
 
   const HOLD_MS = 1200;
   const CIRCUMFERENCE = 565.48;
@@ -86,7 +99,7 @@
     holding = true;
 
     ring.style.transition = 'none';
-    void ring.offsetWidth; // force reflow
+    void ring.offsetWidth;
     ring.style.transition = `stroke-dashoffset ${HOLD_MS}ms linear`;
     ring.style.strokeDashoffset = '0';
 
@@ -104,7 +117,7 @@
 
   function completeHold() {
     holding = false;
-    breakoutRedirect(DESTINATION_URL);
+    window.location = DESTINATION_URL;
   }
 
   wrap.addEventListener('pointerdown', startHold);
@@ -112,22 +125,6 @@
   wrap.addEventListener('pointerleave', cancelHold);
   wrap.addEventListener('pointercancel', cancelHold);
   wrap.addEventListener('contextmenu', e => e.preventDefault());
-
-  // ---- Lightweight in-app-browser breakout ----
-  function isInAppBrowser() {
-    const ua = navigator.userAgent || '';
-    return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|TikTok|Snapchat/i.test(ua);
-  }
-
-  function breakoutRedirect(url) {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isInAppBrowser() && isIOS) {
-      window.location = 'x-safari-' + url;
-      setTimeout(() => { window.location = url; }, 400);
-    } else {
-      window.location = url;
-    }
-  }
 </script>
 
 </body>
